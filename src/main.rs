@@ -1,7 +1,9 @@
+#![allow(dead_code)]
+#![allow(unused_variables)]
+
 use bevy::prelude::*;
 
 // TODO:
-// - window descriptor
 // - ball collision with walls
 // - ball collision with paddles
 // - implement game_state
@@ -10,6 +12,11 @@ use bevy::prelude::*;
 // TODO's for later:
 // - Window Descriptor
 // - make values responsive to size of window
+
+struct GameState {
+    left: u32,
+    right: u32,
+}
 
 struct Ball;
 struct Paddle;
@@ -24,6 +31,12 @@ struct BallDirection(i32, i32);
 fn main() {
     App::build()
         .add_plugins(DefaultPlugins)
+        .insert_resource(WindowDescriptor {
+            title: "Pong".to_string(),
+            width: 1920.0,
+            height: 1080.0,
+            ..Default::default()
+        })
         .insert_resource(ClearColor(Color::rgb(0.0, 0.0, 0.0)))
         .add_startup_system(setup.system())
         .add_system(paddle_movement.system())
@@ -79,38 +92,38 @@ fn paddle_movement(
     mut query: Query<(&mut Transform, &PaddleSize)>,
 ) {
     for (mut transform, paddle) in query.iter_mut() {
-        let mut direction = 0.0;
+        let mut dy = 0.0;
 
         match paddle {
             PaddleSize::Left => {
                 if keyboard_input.pressed(KeyCode::S) {
-                    direction -= 1.0;
+                    dy -= 1.0;
                 }
 
                 if keyboard_input.pressed(KeyCode::W) {
-                    direction += 1.0;
+                    dy += 1.0;
                 }
 
                 let translation = &mut transform.translation;
 
                 // move the paddle horizontally
-                translation.y += time.delta_seconds() * direction * 1200.0;
+                translation.y += time.delta_seconds() * dy * 1200.0;
                 // bound the paddle within the walls
                 translation.y = translation.y.min(520.0 - 50.0).max(-520.0 + 50.0);
             }
             PaddleSize::Right => {
                 if keyboard_input.pressed(KeyCode::Down) {
-                    direction -= 1.0;
+                    dy -= 1.0;
                 }
 
                 if keyboard_input.pressed(KeyCode::Up) {
-                    direction += 1.0;
+                    dy += 1.0;
                 }
 
                 let translation = &mut transform.translation;
 
                 // move the paddle horizontally
-                translation.y += time.delta_seconds() * direction * 1200.0;
+                translation.y += time.delta_seconds() * dy * 1200.0;
                 // bound the paddle within the walls
                 translation.y = translation.y.min(520.0 - 50.0).max(-520.0 + 50.0);
             }
