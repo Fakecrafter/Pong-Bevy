@@ -1,7 +1,8 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
-  
+
 use bevy::prelude::*;
+use bevy::window::WindowMode;
 use bevy::sprite::collide_aabb::*;
 
 
@@ -35,12 +36,6 @@ struct BallDirection(i32, i32);
 fn main() {
     App::build()
         .add_plugins(DefaultPlugins)
-        .insert_resource(WindowDescriptor {
-            title: "Pong".to_string(),
-            width: 1920.0,
-            height: 1080.0,
-            ..Default::default()
-        })
         .add_event::<PointUpEvent>()
         .insert_resource(ClearColor(Color::rgb(0.0, 0.0, 0.0)))
         .insert_resource(GameState {left: 0, right: 0})
@@ -54,10 +49,12 @@ fn main() {
         .run();
 }
 
-fn setup(mut commands: Commands, mut materials: ResMut<Assets<ColorMaterial>>) {
+fn setup(mut commands: Commands, mut materials: ResMut<Assets<ColorMaterial>>, mut windows: ResMut<Windows>) {
     // spawn camera
     commands.spawn_bundle(OrthographicCameraBundle::new_2d());
     commands.spawn_bundle(UiCameraBundle::default());
+
+    windows.get_primary_mut().unwrap().set_mode(WindowMode::Fullscreen {use_size: false});
 
     // paddle 1
     commands
@@ -178,7 +175,7 @@ fn check_point(mut state: ResMut<GameState>, query: Query<(&Transform, &Ball)>, 
 
 fn reset(mut ev_pointup: EventReader<PointUpEvent>,
          mut q: QuerySet<(
-         Query<(&mut Transform, &Ball, &mut BallSpeed)>, 
+         Query<(&mut Transform, &Ball, &mut BallSpeed)>,
          Query<(&mut Transform, &Paddle)>
         )>
     ) {
@@ -194,7 +191,7 @@ fn reset(mut ev_pointup: EventReader<PointUpEvent>,
 }
 
 fn collision(
-     mut ball_query: Query<(&Transform, &mut BallDirection, &Sprite, &mut BallSpeed)>, 
+     mut ball_query: Query<(&Transform, &mut BallDirection, &Sprite, &mut BallSpeed)>,
      paddle_query:   Query<(&Transform, &Sprite, &Paddle)>)
 {
     for (transform, mut direction, sprite, mut ballspeed) in ball_query.iter_mut() {
