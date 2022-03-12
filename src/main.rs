@@ -1,18 +1,10 @@
-#![allow(dead_code)]
-#![allow(unused_variables)]
 
 use bevy::prelude::*;
 use bevy::window::WindowMode;
 use bevy::sprite::collide_aabb::*;
 
 
-// TODO:
-// - ball collision with paddles
-// - speeeed up ball at every touch with paddle
-// - scoreboard
-// - put everything in modules
-// TODO's for later:
-// - make values responsive to size of window
+// TODO: make window responsive
 
 struct BallSpeed(i32);
 
